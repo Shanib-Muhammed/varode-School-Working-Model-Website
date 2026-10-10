@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <title>Varood | Road Crack Monitor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-mark">V</span><span>VAROOD<span class="brand-light"> / ROAD MONITOR</span></span></a>
+    <span class="status"><span class="status-dot"></span> Cloud dashboard</span>
+  </header>
+  <main class="container">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">ROAD INTELLIGENCE SYSTEM</p>
+        <h1>Road crack<br><span>monitoring.</span></h1>
+        <p class="intro">Detection reports sent by the Varood robot appear here with photos, coordinates and timestamps.</p>
+      </div>
+      <div class="hero-icon" aria-hidden="true">⌁</div>
+    </section>
+    <section class="stats" aria-label="Report summary">
+      <article class="stat-card"><span>Total reports</span><strong id="total-count">—</strong></article>
+      <article class="stat-card"><span>Latest report</span><strong id="latest-date" class="stat-small">Waiting for data</strong></article>
+      <article class="stat-card"><span>System</span><strong class="stat-small"><span class="status-dot"></span> Connected</strong></article>
+    </section>
+    <section class="reports-section">
+      <div class="section-head">
+        <div><p class="eyebrow">FIELD DATA</p><h2>Detection reports</h2></div>
+        <button id="refresh-button" class="refresh-button" type="button">↻ Refresh</button>
+      </div>
+      <div id="message" class="message">Connecting to the report database…</div>
+      <div id="reports" class="reports-grid"></div>
+    </section>
+    <footer>VAROOD SCHOOL PROJECT <span>·</span> Road crack detection prototype</footer>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
