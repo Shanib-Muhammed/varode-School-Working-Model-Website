@@ -41,7 +41,7 @@ loginForm.addEventListener("submit", async (event) => {
   try {
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: window.location.origin, shouldCreateUser: false }
+      options: { emailRedirectTo: window.location.origin, shouldCreateUser: true }
     });
     if (error) throw error;
     authStatus.textContent = "If this email is registered and authorized, a sign-in link has been sent. Check your inbox and spam folder.";
