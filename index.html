@@ -31,6 +31,12 @@
       <article class="stat-card"><span class="stat-label">LATEST REPORT</span><strong id="latest-date" class="stat-small">Waiting for data</strong><span class="stat-foot">Most recent detection time</span></article>
       <article class="stat-card"><span class="stat-label">DASHBOARD STATUS</span><strong class="stat-small"><span class="status-dot"></span> Online</strong><span class="stat-foot">Auto-refresh every 30 seconds</span></article>
     </section>
+    <section class="admin-login" aria-labelledby="admin-heading">
+      <div><p class="eyebrow">ADMIN ACCESS</p><h2 id="admin-heading">Dashboard administrator</h2><p class="section-subtitle">Sign in with the authorized email to manage reports. A secure sign-in link will be emailed to you.</p></div>
+      <form id="login-form" class="login-form"><label for="admin-email">Admin email</label><input id="admin-email" type="email" autocomplete="email" required placeholder="you@example.com"><button class="refresh-button" type="submit">Send sign-in link</button></form>
+      <div id="auth-status" class="auth-status" role="status">Viewing reports is public. Sign in is required only to delete reports.</div>
+      <button id="logout-button" class="refresh-button logout-button" type="button" hidden>Sign out</button>
+    </section>
     <section class="reports-section">
       <div class="section-head">
         <div><p class="eyebrow">FIELD DATA</p><h2>Detection reports</h2><p class="section-subtitle">Open any image for a closer look. Use the map link to view the reported coordinates.</p></div>
