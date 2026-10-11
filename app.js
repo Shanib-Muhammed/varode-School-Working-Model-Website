@@ -15,7 +15,6 @@ const modalImage = document.querySelector("#modal-image");
 const modalCaption = document.querySelector("#modal-caption");
 const modalClose = document.querySelector("#modal-close");
 const loginForm = document.querySelector("#login-form");
-const adminEmailInput = document.querySelector("#admin-email");
 const ADMIN_EMAIL = "muhammedshanib912@gmail.com";
 const authStatus = document.querySelector("#auth-status");
 const logoutButton = document.querySelector("#logout-button");
@@ -32,22 +31,18 @@ async function updateAuthUI() {
     ? `Signed in as ${currentSession.user.email}. Admin report deletion is enabled.`
     : signedIn
       ? `Signed in as ${currentSession.user.email}, but this account is not the authorized administrator. Reports remain view-only.`
-      : "Viewing reports is public. The administrator can sign in with email and password to delete reports.";
+      : "Reports are public. Enter the administrator password to manage reports.";
   document.querySelectorAll(".delete-button").forEach((button) => { button.hidden = !isAdmin; });
 }
 
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const email = adminEmailInput.value.trim().toLowerCase();
+  // The email is fixed internally; the administrator only enters a password on the page.
+  const email = ADMIN_EMAIL;
   const passwordInput = document.querySelector("#admin-password");
   const password = passwordInput.value;
   const submit = loginForm.querySelector("button[type=submit]");
   submit.disabled = true;
-  if (email !== ADMIN_EMAIL) {
-    authStatus.textContent = "This email is not authorized for administrator login.";
-    submit.disabled = false;
-    return;
-  }
   authStatus.textContent = "Signing in securely…";
   try {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -158,7 +153,7 @@ function makeReportCard(report) {
     // It is not stored in this page or sent to GitHub.
     const { data: sessionData } = await supabase.auth.getSession();
     const accessToken = sessionData.session?.access_token;
-    if (!accessToken) { authStatus.textContent = "Please sign in with the authorized administrator email first."; return; }
+    if (!accessToken) { authStatus.textContent = "Please sign in with the administrator password first."; return; }
 
     deleteButton.disabled = true;
     deleteButton.textContent = "Deleting…";
