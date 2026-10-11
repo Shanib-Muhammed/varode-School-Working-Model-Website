@@ -32,9 +32,9 @@
       <article class="stat-card"><span class="stat-label">DASHBOARD STATUS</span><strong class="stat-small"><span class="status-dot"></span> Online</strong><span class="stat-foot">Auto-refresh every 30 seconds</span></article>
     </section>
     <section class="admin-login" aria-labelledby="admin-heading">
-      <div><p class="eyebrow">ADMIN ACCESS</p><h2 id="admin-heading">Dashboard administrator</h2><p class="section-subtitle">Administrator only: sign in with your authorized email and password. Everyone else can view reports without signing in.</p></div>
-      <form id="login-form" class="login-form"><label for="admin-email">Admin email</label><input id="admin-email" type="email" autocomplete="username" required placeholder="admin@example.com"><label for="admin-password">Password</label><input id="admin-password" type="password" autocomplete="current-password" required placeholder="Enter admin password"><button class="refresh-button" type="submit">Sign in</button></form>
-      <div id="auth-status" class="auth-status" role="status">Viewing reports is public. Sign in is required only to delete reports.</div>
+      <div><p class="eyebrow">ADMIN ACCESS</p><h2 id="admin-heading">Dashboard administrator</h2><p class="section-subtitle">Reports are public. Enter the administrator password to enable admin actions.</p></div>
+      <form id="login-form" class="login-form"><label for="admin-password">Administrator password</label><input id="admin-password" type="password" autocomplete="current-password" required placeholder="Enter VAROOD admin password"><button class="refresh-button" type="submit">Admin sign in</button></form>
+      <div id="auth-status" class="auth-status" role="status">Viewing reports is public. Enter the administrator password only to manage reports.</div>
       <button id="logout-button" class="refresh-button logout-button" type="button" hidden>Sign out</button>
     </section>
     <section class="reports-section">
