@@ -14,6 +14,49 @@ const modal = document.querySelector("#photo-modal");
 const modalImage = document.querySelector("#modal-image");
 const modalCaption = document.querySelector("#modal-caption");
 const modalClose = document.querySelector("#modal-close");
+const loginForm = document.querySelector("#login-form");
+const adminEmailInput = document.querySelector("#admin-email");
+const authStatus = document.querySelector("#auth-status");
+const logoutButton = document.querySelector("#logout-button");
+let currentSession = null;
+
+async function updateAuthUI() {
+  const { data } = await supabase.auth.getSession();
+  currentSession = data.session;
+  const signedIn = Boolean(currentSession);
+  loginForm.hidden = signedIn;
+  logoutButton.hidden = !signedIn;
+  authStatus.textContent = signedIn
+    ? `Signed in as ${currentSession.user.email}. Report deletion is enabled for the authorized administrator.`
+    : "Viewing reports is public. Sign in is required only to delete reports.";
+  document.querySelectorAll(".delete-button").forEach((button) => { button.hidden = !signedIn; });
+}
+
+loginForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const email = adminEmailInput.value.trim();
+  const submit = loginForm.querySelector("button[type=submit]");
+  submit.disabled = true;
+  authStatus.textContent = "Sending secure sign-in link…";
+  try {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin, shouldCreateUser: false }
+    });
+    if (error) throw error;
+    authStatus.textContent = "If this email is registered and authorized, a sign-in link has been sent. Check your inbox and spam folder.";
+  } catch (error) {
+    authStatus.textContent = `Could not send sign-in link: ${error.message}`;
+  } finally { submit.disabled = false; }
+});
+
+logoutButton.addEventListener("click", async () => {
+  const { error } = await supabase.auth.signOut();
+  if (error) authStatus.textContent = `Sign out failed: ${error.message}`;
+  await updateAuthUI();
+  await loadReports();
+});
+supabase.auth.onAuthStateChange(() => { updateAuthUI().then(loadReports); });
 
 function formatDate(value) {
   if (!value) return "Time not supplied";
@@ -89,6 +132,7 @@ function makeReportCard(report) {
   deleteButton.className = "delete-button";
   deleteButton.type = "button";
   deleteButton.textContent = "Delete report";
+  deleteButton.hidden = !currentSession;
   deleteButton.addEventListener("click", async () => {
     const confirmed = window.confirm(
       `Delete report #${report.id}, its photo, and its database record? This cannot be undone.`
@@ -97,8 +141,9 @@ function makeReportCard(report) {
 
     // Ask for a server-side admin secret only when a deletion is requested.
     // It is not stored in this page or sent to GitHub.
-    const adminKey = window.prompt("Enter the dashboard admin key to confirm deletion:");
-    if (!adminKey) return;
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData.session?.access_token;
+    if (!accessToken) { authStatus.textContent = "Please sign in with the authorized administrator email first."; return; }
 
     deleteButton.disabled = true;
     deleteButton.textContent = "Deleting…";
@@ -107,7 +152,8 @@ function makeReportCard(report) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-admin-key": adminKey
+          "Authorization": `Bearer ${accessToken}`,
+          "apikey": SUPABASE_PUBLISHABLE_KEY
         },
         body: JSON.stringify({ action: "delete", id: report.id })
       });
@@ -119,7 +165,7 @@ function makeReportCard(report) {
       await loadReports();
     } catch (error) {
       console.error("Delete failed:", error);
-      messageElement.textContent = `Delete failed: ${error.message}. Check that the manage-report function and its secret are configured.`;
+      messageElement.textContent = `Delete failed: ${error.message}. Confirm the administrator email is authorized and signed in.`;
       deleteButton.disabled = false;
       deleteButton.textContent = "Delete report";
     }
@@ -172,5 +218,5 @@ async function loadReports() {
 }
 
 refreshButton.addEventListener("click", loadReports);
-loadReports();
+updateAuthUI().then(loadReports);
 window.setInterval(loadReports, 30000);
