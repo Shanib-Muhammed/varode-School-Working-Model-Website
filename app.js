@@ -16,6 +16,7 @@ const modalCaption = document.querySelector("#modal-caption");
 const modalClose = document.querySelector("#modal-close");
 const loginForm = document.querySelector("#login-form");
 const adminEmailInput = document.querySelector("#admin-email");
+const ADMIN_EMAIL = "muhammedshanib912@gmail.com";
 const authStatus = document.querySelector("#auth-status");
 const logoutButton = document.querySelector("#logout-button");
 let currentSession = null;
@@ -24,29 +25,43 @@ async function updateAuthUI() {
   const { data } = await supabase.auth.getSession();
   currentSession = data.session;
   const signedIn = Boolean(currentSession);
+  const isAdmin = signedIn && (currentSession.user.email || "").toLowerCase() === ADMIN_EMAIL;
   loginForm.hidden = signedIn;
   logoutButton.hidden = !signedIn;
-  authStatus.textContent = signedIn
-    ? `Signed in as ${currentSession.user.email}. Report deletion is enabled for the authorized administrator.`
-    : "Viewing reports is public. Sign in is required only to delete reports.";
-  document.querySelectorAll(".delete-button").forEach((button) => { button.hidden = !signedIn; });
+  authStatus.textContent = isAdmin
+    ? `Signed in as ${currentSession.user.email}. Admin report deletion is enabled.`
+    : signedIn
+      ? `Signed in as ${currentSession.user.email}, but this account is not the authorized administrator. Reports remain view-only.`
+      : "Viewing reports is public. The administrator can sign in with email and password to delete reports.";
+  document.querySelectorAll(".delete-button").forEach((button) => { button.hidden = !isAdmin; });
 }
 
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const email = adminEmailInput.value.trim();
+  const email = adminEmailInput.value.trim().toLowerCase();
+  const passwordInput = document.querySelector("#admin-password");
+  const password = passwordInput.value;
   const submit = loginForm.querySelector("button[type=submit]");
   submit.disabled = true;
-  authStatus.textContent = "Sending secure sign-in link…";
+  if (email !== ADMIN_EMAIL) {
+    authStatus.textContent = "This email is not authorized for administrator login.";
+    submit.disabled = false;
+    return;
+  }
+  authStatus.textContent = "Signing in securely…";
   try {
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: window.location.origin, shouldCreateUser: true }
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
-    authStatus.textContent = "If this email is registered and authorized, a sign-in link has been sent. Check your inbox and spam folder.";
+    const { data } = await supabase.auth.getSession();
+    currentSession = data.session;
+    if ((currentSession?.user?.email || "").toLowerCase() !== ADMIN_EMAIL) {
+      await supabase.auth.signOut();
+      throw new Error("This account is not authorized as the administrator.");
+    }
+    passwordInput.value = "";
+    authStatus.textContent = "Admin login successful.";
   } catch (error) {
-    authStatus.textContent = `Could not send sign-in link: ${error.message}`;
+    authStatus.textContent = `Login failed: ${error.message}. Check that the admin user has a password set in Supabase Auth.`;
   } finally { submit.disabled = false; }
 });
 
