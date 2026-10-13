@@ -1,6 +1,6 @@
-# Varood Road Damage Reporting Website
+# Varode Road Damage Reporting Website
 
-A web dashboard for the Varood school working model. It is intended to display road-damage reports sent by the Raspberry Pi robot, including the report photo, coordinates, and timestamp when those fields are supplied by the backend.
+A web dashboard for the Varode school working model. It is intended to display road-damage reports sent by the Raspberry Pi robot, including the report photo, coordinates, and timestamp when those fields are supplied by the backend.
 
 ## Project overview
 
@@ -113,4 +113,4 @@ Live GPS is **not yet implemented** in the current Raspberry Pi detection script
 
 ## Related project
 
-For the Raspberry Pi code, ESP8266 car-control code, wiring notes, and hardware documentation, see the [main Varood school working model repository](https://github.com/Shanib-Muhammed/varoode-school-working-model).
+For the Raspberry Pi code, ESP8266 car-control code, wiring notes, and hardware documentation, see the [main Varode school working model repository](https://github.com/Shanib-Muhammed/varoode-school-working-model).
